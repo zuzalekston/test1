@@ -11,6 +11,7 @@ use App\Form\DataTransformer\TagsDataTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -51,6 +52,8 @@ class PhotoType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $photo = $builder->getData();
+
         $builder->add(
             'title',
             TextType::class,
@@ -71,15 +74,17 @@ class PhotoType extends AbstractType
             ]
         );
 
-        $builder->add(
-            'photo',
-            TextType::class,
-            [
-                'label' => 'label_photo',
-                'required' => true,
-                'attr' => ['max_length' => 64],
-            ]
-        );
+        if (!$photo->getPhoto()) {
+            $builder->add(
+                'photo',
+                FileType::class,
+                [
+                    'label' => 'label_photo',
+                    'required' => $photo->getPhoto() ? false : true,
+                ]
+            );
+        }
+
 
         $builder->add(
             'category',
